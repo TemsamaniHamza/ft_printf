@@ -13,13 +13,47 @@ int ft_print(char *str)
 	}
 	return (i);
 }
+int ft_putchar(char c)
+{
+    write(1, &c, 1);
+    return (1);
+}
+int ft_checkdecimal(unsigned int n)
+{
+    char *str = "0123456789abcdef";
+    int count = 0;
 
-void	ft_putnbr_long(unsigned int n)
+    if (n > 15)
+    {
+        count += ft_checkdecimal(n / 16);
+        count += ft_putchar(str[n % 16]);
+    }
+    else
+        count += ft_putchar(str[n]);
+    return count;
+}
+
+int ft_checkdecimal_caps(unsigned int n)
+{
+    char *str = "0123456789ABCDEF";
+    int count = 0;
+
+    if (n > 15)
+    {
+        count += ft_checkdecimal_caps(n / 16);
+        count += ft_putchar(str[n % 16]);
+    }
+    else
+        count += ft_putchar(str[n]);
+    return count;
+}
+
+int	ft_putnbr_long(unsigned int n)
 {
 	unsigned long	nbr;
 	char	c[10];
 	int		i;
-
+	int		j;
 	nbr = n;
 	i = 0;
 
@@ -30,12 +64,43 @@ void	ft_putnbr_long(unsigned int n)
 		i++;
 	}
 	c[i] = nbr + '0';
+	j = i + 1;
 	while (i >= 0)
 	{
 		write(1, &c[i], 1);
 		i--;
 	}
-	return ;
+	return (j);
+}
+
+int	ft_putnbr(int n)
+{
+	long	nbr;
+	char	c[10];
+	int		i;
+	int		j;
+
+	nbr = n;
+	i = 0;
+	if (nbr < 0)
+	{
+		write(1, "-", 1);
+		nbr = nbr * -1;
+	}
+	while (nbr > 9)
+	{
+		c[i] = (nbr % 10) + '0';
+		nbr = (nbr / 10);
+		i++;
+	}
+	c[i] = nbr + '0';
+	j = i + 1;
+	while (i >= 0)
+	{
+		write(1, &c[i], 1);
+		i--;
+	}
+	return (j);
 }
 
 int ft_handlerall(const char *str,int i,va_list arg)
@@ -47,20 +112,16 @@ int ft_handlerall(const char *str,int i,va_list arg)
 		write (1, &c, 1);
 		count++;
 	}
-	if (str[i] == 's')
-	{
+	else if (str[i] == 's')
 		count += ft_print(va_arg(arg, char *));
-	}
-	if (str[i] == 'd' || str[i] == 'i')
-	{
-		long d = va_arg(arg, long);
-		ft_putnbr_fd(d,1);
-	}
-	if (str[i] == 'u')
-	{
-		unsigned long l = va_arg(arg, unsigned long);
-		ft_putnbr_long(l);
-	}
+	else if (str[i] == 'd' || str[i] == 'i')
+		count += ft_putnbr(va_arg(arg, int));
+	else if (str[i] == 'u')
+		count += ft_putnbr_long(va_arg(arg, unsigned long));
+	else if (str[i] == 'x')
+		count += ft_checkdecimal(va_arg(arg, unsigned int));
+	else if (str[i] == 'X')
+		count += ft_checkdecimal_caps(va_arg(arg, unsigned int));
 	return(count);
 
 }
@@ -70,30 +131,29 @@ int ft_printf(const char *str, ...)
 	va_list arg;
 	int i = 0;
 	int j = 0;
+	int count = 0;
 	va_start(arg,str);
 	while (str[i] != '\0')
 	{
 		if (str[i] == '%')
 		{
 			i++;
-			j += ft_handlerall(str, i, arg);
+			count += ft_handlerall(str, i, arg);
 		}
-		else if (ft_isprint(str[i]))
+		else
 		{
-			write (1, &str[i], 1);
+			count += write (1, &str[i], 1);
 		}
 			i++;
 	}
-	return (j);
+	return (count);
 }
 
 int main()
-{
-	int n1 = ft_printf("%s","this is just a test");
-	printf("\n");
-	ft_printf("%d", n1);
-	printf("\n");
-	int n2 = printf("%s", "this is just a test");
+ {
+	int n1 = ft_printf("%s -> %X\n","this is just a test", 15145);
+	printf("%d\n", n1); 
+	int n2 = printf("%s -> %X\n","this is just a test", 15145);
 	printf("%d\n", n2);
+	return (0);
 }
-
