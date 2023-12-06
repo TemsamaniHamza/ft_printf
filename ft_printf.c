@@ -81,7 +81,6 @@ int	ft_putnbr(int n)
 	int		j;
 
 	nbr = n;
-	i = 0;
 	if (nbr < 0)
 	{
 		write(1, "-", 1);
@@ -103,6 +102,7 @@ int	ft_putnbr(int n)
 	return (j);
 }
 
+
 int ft_handlerall(const char *str,int i,va_list arg)
 {
 	int count = 0;
@@ -122,6 +122,13 @@ int ft_handlerall(const char *str,int i,va_list arg)
 		count += ft_checkdecimal(va_arg(arg, unsigned int));
 	else if (str[i] == 'X')
 		count += ft_checkdecimal_caps(va_arg(arg, unsigned int));
+	else if (str[i] == 'p')
+	{
+		if (!va_arg(arg, unsigned int))
+			count += ft_print("(nil)");
+		else
+			count += ft_checkdecimal(va_arg(arg, unsigned int));
+	}
 	return(count);
 
 }
@@ -132,6 +139,9 @@ int ft_printf(const char *str, ...)
 	int i = 0;
 	int j = 0;
 	int count = 0;
+
+	if (!str)
+		return 0;
 	va_start(arg,str);
 	while (str[i] != '\0')
 	{
@@ -148,12 +158,14 @@ int ft_printf(const char *str, ...)
 	}
 	return (count);
 }
+#include <stdlib.h>
 
 int main()
  {
-	int n1 = ft_printf("%s -> %X\n","this is just a test", 15145);
+	char *ptr = malloc(999);
+	int n1 = printf("%s -> %p\n",NULL , NULL);
 	printf("%d\n", n1); 
-	int n2 = printf("%s -> %X\n","this is just a test", 15145);
-	printf("%d\n", n2);
+	// int n2 = ft_printf("%s -> %p\n",NULL , NULL);
+	// ft_printf("%d\n", n2);
 	return (0);
 }
